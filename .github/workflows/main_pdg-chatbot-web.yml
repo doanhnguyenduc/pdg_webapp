@@ -10,7 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
+<<<<<<< HEAD
       contents: read #This is required for actions/checkout
+=======
+      contents: read
+>>>>>>> 5e77ec8 (Fix merge conflict in YAML file)
 
     steps:
       - uses: actions/checkout@v4
@@ -28,8 +32,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+<<<<<<< HEAD
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
+=======
+>>>>>>> 5e77ec8 (Fix merge conflict in YAML file)
       - name: Upload source code for deployment
         uses: actions/upload-artifact@v4
         with:
