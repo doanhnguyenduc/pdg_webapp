@@ -10,25 +10,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # Required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Python version
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: Create and start virtual environment
+      - name: Create and activate virtual environment
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # Optional: Run tests (Uncomment if needed)
+      # - name: Run tests
+      #   run: pytest
 
       - name: Upload source code for deployment
         uses: actions/upload-artifact@v4
@@ -36,7 +39,7 @@ jobs:
           name: python-app
           path: |
             .  # Upload toàn bộ source code
-            !venv/  # Bỏ thư mục venv để tránh upload file không cần thiết
+          retention-days: 1  # Xóa artifact sau 1 ngày để tránh lưu trữ không cần thiết
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,7 +56,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: .  # Giải nén code vào thư mục làm việc chính
+          path: ./app  # Giải nén vào thư mục riêng tránh lỗi
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -62,14 +65,13 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_83C26C2CE7DC47F1A48F75189C0E19E7 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1F26A5593EE4B7799A76A9C59858008 }}
 
-      - name: 'Deploy source code to Azure Web App'
+      - name: Deploy source code to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'pdg-chatbot-web'
           slot-name: 'Production'
-          package: .  # Deploy trực tiếp thư mục chứa code
+          package: ./app  # Chỉ deploy thư mục chứa code
 
       - name: Restart Azure Web App
-        run: |
-          az webapp restart --name pdg-chatbot-web --resource-group pdg-ai-resource
+        run: az webapp restart --name pdg-chatbot-web --resource-group pdg-ai-resource
