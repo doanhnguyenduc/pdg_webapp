@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDG Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Công ty TNHH Phát Đạt Holdings" width="150">
+        <h1>Trợ lý AI - PDG Chatbot</h1>
+    </header>
+    <main>
+        <form method="post">
+            <label for="question">Nhập câu hỏi của bạn:</label><br>
+            <textarea id="question" name="question" rows="4" cols="50" placeholder="Nhập câu hỏi...">{{ question }}</textarea><br>
+            <button type="submit">Gửi</button>
+        </form>
+        <section>
+            <h2>Kết quả trả lời:</h2>
+            <p>{{ answer }}</p>
+        </section>
+    </main>
+    <footer>
+        <p>© 2024 Công ty TNHH Phát Đạt Holdings</p>
+    </footer>
+</body>
+</html>
