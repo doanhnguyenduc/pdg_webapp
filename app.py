@@ -4,11 +4,9 @@ import json
 
 app = Flask(__name__)
 
-# Địa chỉ endpoint của Prompt Flow (sửa lại theo URL của bạn)
-ENDPOINT_URL = "https://pdg-ml-endpoint.southeastasia.inference.ml.azure.com/score"
-
-# API Key từ Azure Machine Learning Endpoint (đảm bảo bảo mật)
-API_KEY = "Fc8MxW3MxVCDFYvWhfbflL4qfaeUO9sAbiQfbAcPYPtEreZnvtkBJQQJ99BCAAAAAAAAAAAAINFRAZML2LYk"
+import os
+API_KEY = os.environ.get("API_KEY")
+ENDPOINT_URL = os.environ.get("ENDPOINT_URL")
 
 HEADERS = {
     "Content-Type": "application/json",
