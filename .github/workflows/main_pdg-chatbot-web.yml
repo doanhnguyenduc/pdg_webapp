@@ -60,6 +60,11 @@ jobs:
           name: python-app
           path: ${{ github.workspace }}  # Lưu file ZIP vào thư mục làm việc GitHub Actions
 
+      - name: Ensure target directory exists and has write permissions
+        run: |
+          sudo mkdir -p /home/site/wwwroot/  # Đảm bảo thư mục tồn tại
+          sudo chmod -R 777 /home/site/wwwroot/  # Cấp quyền ghi để tránh lỗi
+
       - name: Unzip deployment package
         run: unzip $GITHUB_WORKSPACE/deploy_package.zip -d /home/site/wwwroot/
 
