@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read  # Required for actions/checkout
+      contents: read # Required for actions/checkout
 
     steps:
       - name: Checkout repository
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.9'
 
       - name: Create and start virtual environment
         run: |
@@ -31,13 +31,10 @@ jobs:
 
       - name: Create deployment package
         run: |
-          rm -rf deploy_package  # Xóa thư mục cũ nếu có
+          rm -rf deploy_package  # Xóa thư mục cũ nếu tồn tại
           mkdir deploy_package  # Tạo thư mục mới
-          rsync -av --exclude=deploy_package --exclude=venv --exclude=.git ./ deploy_package/  # Sao chép mã nguồn
-          cd deploy_package && zip -r ../deploy_package.zip ./*  # Tạo file ZIP
-
-      - name: Debug - Kiểm tra file ZIP đã tạo
-        run: ls -lah deploy_package.zip
+          rsync -av --exclude=deploy_package --exclude=venv --exclude=.git ./ deploy_package/  # Sao chép mã nguồn trừ thư mục không cần thiết
+          zip -r deploy_package.zip deploy_package/  # Nén lại thành deploy_package.zip
 
       - name: Upload source code for deployment
         uses: actions/upload-artifact@v4
@@ -63,10 +60,7 @@ jobs:
           path: .
 
       - name: Ensure startup script is executable
-        run: chmod +x startup.sh || true
-
-      - name: Debug - Kiểm tra file ZIP đã tải về
-        run: ls -lah deploy_package.zip
+        run: chmod +x startup.sh
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -81,7 +75,7 @@ jobs:
         with:
           app-name: 'pdg-chatbot-web'
           slot-name: 'Production'
-          package: deploy_package.zip  # Sửa lại để deploy đúng file ZIP
+          package: deploy_package.zip  # Chỉ upload file ZIP
 
       - name: Restart Azure Web App
         run: |
