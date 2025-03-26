@@ -13,9 +13,10 @@ jobs:
       contents: read # Required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python version
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
@@ -30,9 +31,9 @@ jobs:
 
       - name: Create deployment package
         run: |
-          mkdir -p deploy_package
-          cp -r * deploy_package/
-          rm -rf deploy_package/venv  # Không upload thư mục venv
+          rm -rf deploy_package  # Xóa thư mục cũ nếu tồn tại
+          mkdir deploy_package  # Tạo thư mục mới
+          rsync -av --exclude=deploy_package --exclude=venv --exclude=.git ./ deploy_package/  # Sao chép mã nguồn trừ thư mục không cần thiết
 
       - name: Upload source code for deployment
         uses: actions/upload-artifact@v4
@@ -55,22 +56,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-          path: .
+          path: deploy_package/
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A2C4E8FE1F5E48829FFEE12603944B83 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_83C26C2CE7DC47F1A48F75189C0E19E7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1F26A5593EE4B7799A76A9C59858008 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-      - name: 'Deploy source code to Azure Web App'
+      - name: Deploy source code to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'pdg-chatbot-web'
           slot-name: 'Production'
-          package: .  # Deploy thư mục đã tải về
+          package: deploy_package/
 
       - name: Restart Azure Web App
         run: |
