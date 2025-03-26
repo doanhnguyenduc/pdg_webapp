@@ -60,12 +60,8 @@ jobs:
           name: python-app
           path: ${{ github.workspace }}  # Lưu file ZIP vào thư mục làm việc GitHub Actions
 
-      - name: Ensure target directory exists
-        run: |
-          sudo chmod -R 777 /home/site/wwwroot/  # Cấp quyền ghi để tránh lỗi
-
       - name: Unzip deployment package
-        run: unzip ${{ github.workspace }}/deploy_package.zip -d /home/site/wwwroot/
+        run: unzip $GITHUB_WORKSPACE/deploy_package.zip -d /home/site/wwwroot/
 
       - name: Ensure startup script is executable
         run: chmod +x /home/site/wwwroot/startup.sh  # Đảm bảo script có quyền thực thi
